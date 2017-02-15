@@ -1,6 +1,6 @@
 param (
     [string]
-    $savePath = "$($env:USERPROFILE)\Pictures\Wallpapers3"
+    $savePath = "$($env:USERPROFILE)\Pictures\Wallpapers"
 )
 
 $assetsPath = "$env:USERPROFILE\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager*\LocalState\Assets"
@@ -19,4 +19,5 @@ Get-ChildItem "$assetsPath\*" | % {
         }
     }
 }
+Remove-Item $tempPath -Recurse
 Write-Host "$count new pictures found"
