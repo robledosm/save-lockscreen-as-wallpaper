@@ -1,20 +1,28 @@
 param (
-    [string]
+    [string] 
     $savePath = "$($env:USERPROFILE)\Pictures\Wallpapers"
 )
 
-$assetsPath = "$env:USERPROFILE\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager*\LocalState\Assets"
+if (-not (Test-Path("$savePath"))) { New-Item $savePath -ItemType Directory -Force | Out-Null }
+
+$assetsPath = "$($env:USERPROFILE)\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager*\LocalState\Assets"
 $guid = [System.Guid]::NewGuid().guid
 $tempPath = "$savePath\$guid"
-New-Item $tempPath -Type Directory -Force | Out-Null
+New-Item $tempPath -ItemType Directory -Force | Out-Null
+
+$assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { $_.Length -gt 200kb }
+
 $count = 0
-Get-ChildItem "$assetsPath\*" | % {
-    if (((Get-Item $_).Length -gt 200kb) -and (-not (Test-Path("$savePath\$($_.Name).png")))) {
-        Copy-Item $_.FullName "$tempPath\$($_.Name).png"
+foreach($asset in $assets)
+{
+    $saveImagePath = "$savePath\$($asset.Name).png"
+    if (-not (Test-Path($saveImagePath))) {
+        $tempImagePath = "$tempPath\$($asset.Name).png"
+        Copy-Item $asset.FullName $tempImagePath
         $image = New-Object -comObject WIA.ImageFile
-        $image.LoadFile("$tempPath\$($_.Name).png")
+        $image.LoadFile($tempImagePath)
         if($image.Width.ToString() -eq "1920") {
-            Move-Item "$tempPath\$($_.Name).png" $savePath -Force 
+            Move-Item $tempImagePath $saveImagePath -Force 
             $count++
         }
     }
