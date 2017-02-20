@@ -12,7 +12,7 @@ New-Item $tempPath -ItemType Directory -Force | Out-Null #Create temp folder
 [string[]]$skip =  '8b74981a36852521d967ca3f56fea420788993d927db53b5f7cb57f6cf217e99'  #List of images to skip
 $assetsPath = "$($env:USERPROFILE)\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager*\LocalState\Assets"
 
-$assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { ($_.Length -gt 100kb)-and ($skip -notcontains $_.Name) } #Get assets with more than 100kb and not in the skip list
+$assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { ($_.Length -gt 100kb) -and ($skip -notcontains $_.Name) } #Get assets with more than 100kb and not in the skip list
 
 $count = 0
 foreach($asset in $assets)
