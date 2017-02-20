@@ -12,11 +12,13 @@ New-Item $tempPath -ItemType Directory -Force | Out-Null #Create temp folder
 $assetsPath = "$($env:USERPROFILE)\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager*\LocalState\Assets"
 $assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { $_.Length -gt 200kb } #Get assets with more than 200kb
 
+[string[]]$skip =  '8b74981a36852521d967ca3f56fea420788993d927db53b5f7cb57f6cf217e99' 
+
 $count = 0
 foreach($asset in $assets)
 {
     $finalImagePath = "$savePath\$($asset.Name).png"
-    if (-not (Test-Path($finalImagePath))) { #If the file does not already exists in its final destination
+    if (($skip -notcontains $asset.Name) -and (-not (Test-Path($finalImagePath)))) { #If the file does not exist in the skip array and does not already exists in its final destination
         $tempImagePath = "$tempPath\$($asset.Name).png"
         Copy-Item $asset.FullName $tempImagePath #Copy the file to the temp folder adding .png as extension
         $image = New-Object -comObject WIA.ImageFile
