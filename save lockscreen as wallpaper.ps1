@@ -36,5 +36,5 @@ foreach($asset in $assets) {
     }
 }
 
-#Remove-Item $tempPath -Recurse #remove temp folder and files
+Remove-Item $tempPath -Recurse #remove temp folder and files
 Write-Host "$count new pictures found"
