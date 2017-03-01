@@ -9,7 +9,8 @@ $guid = [System.Guid]::NewGuid().guid
 $tempPath = "$savePath\$guid"
 New-Item $tempPath -ItemType Directory -Force | Out-Null #Create temp folder
 
-[string[]]$skip =  '8b74981a36852521d967ca3f56fea420788993d927db53b5f7cb57f6cf217e99', '390b0ea66bb431a9cfdb4ad8957e91368cee38f4de703bfd69c353f664dc9e7f'  #List of images to skip
+$skip = Get-Content -Path  ".\skipFiles.config" #list of files to skip
+
 $assetsPath = "$($env:USERPROFILE)\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager*\LocalState\Assets"
 
 $assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { ($_.Length -gt 200kb) -and ($skip -notcontains $_.Name) } #Get assets with more than 200kb and not in the skip list
