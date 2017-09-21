@@ -11,7 +11,6 @@ $guid = [System.Guid]::NewGuid().guid
 $tempPath = "$savePath\$guid"
 New-Item $tempPath -ItemType Directory -Force | Out-Null #Create temp folder
 
-
 [string[]]$skip = ""
 
 if (Test-Path(".\skipFiles.config")) {
@@ -25,14 +24,18 @@ $assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { ($_.Length -gt 20
 
 $count = 0
 foreach($asset in $assets) {
-    $tempImagePath = "$tempPath\$($asset.Name).png"
-    Copy-Item $asset.FullName $tempImagePath #Copy the file to the temp folder adding .png as extension
-    $image = New-Object -comObject WIA.ImageFile
-    $image.LoadFile($tempImagePath)
-    if($image.Width.ToString() -eq "1920") {
-        #If the image is 1920 pixels width...
-        Move-Item $tempImagePath "$savePath\$($asset.Name).png" -Force #Move it to its final destination
-        $count++
+    #check if there is not another file with exactly the same size
+    $sameSizeExists = (Get-ChildItem -Path "$savePath\*" | Where-Object { $_.Length -eq $asset.Length }).Length -gt 0
+    if (-not $sameSizeExists) {
+        $tempImagePath = "$tempPath\$($asset.Name).png"
+        Copy-Item $asset.FullName $tempImagePath #Copy the file to the temp folder adding .png as extension
+        $image = New-Object -comObject WIA.ImageFile
+        $image.LoadFile($tempImagePath)
+        if($image.Width.ToString() -eq "1920") {
+            #If the image is 1920 pixels width...
+            Move-Item $tempImagePath "$savePath\$($asset.Name).png" -Force #Move it to its final destination
+            $count++
+        }
     }
 }
 
