@@ -46,7 +46,7 @@ Remove-Item $tempPath -Recurse #remove temp folder and files
 Write-Host "$count new pictures found"
 if ($count -gt 0) {
     $message = 'Confirmation'
-    $question = 'Do you wanna see the new wallpapers?'
+    $question = 'Do you wanna see the new pictures?'
 
     $choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]
     $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))
