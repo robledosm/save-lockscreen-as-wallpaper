@@ -23,7 +23,8 @@ $assetsPath = "$($env:USERPROFILE)\AppData\Local\Packages\Microsoft.Windows.Cont
 $assets = Get-ChildItem -Path "$assetsPath\*" | Where-Object { ($_.Length -gt 200kb) -and ($skip -notcontains $_.Name) -and (-not (Test-Path("$savePath\$($_.Name).png"))) } 
 
 $count = 0
-foreach($asset in $assets) {
+$final = @()
+foreach ($asset in $assets) {
     #check if there is not another file with exactly the same size
     $sameSizeExists = (Get-ChildItem -Path "$savePath\*" | Where-Object { $_.Length -eq $asset.Length }).Length -gt 0
     if (-not $sameSizeExists) {
@@ -31,9 +32,11 @@ foreach($asset in $assets) {
         Copy-Item $asset.FullName $tempImagePath #Copy the file to the temp folder adding .png as extension
         $image = New-Object -comObject WIA.ImageFile
         $image.LoadFile($tempImagePath)
-        if($image.Width.ToString() -eq "1920") {
+        if ($image.Width.ToString() -eq "1920") {
             #If the image is 1920 pixels width...
-            Move-Item $tempImagePath "$savePath\$($asset.Name).png" -Force #Move it to its final destination
+            $finalDestination = "$savePath\$($asset.Name).png"
+            Move-Item $tempImagePath $finalDestination -Force #Move it to its final destination
+            $final += $finalDestination
             $count++
         }
     }
@@ -41,3 +44,18 @@ foreach($asset in $assets) {
 
 Remove-Item $tempPath -Recurse #remove temp folder and files
 Write-Host "$count new pictures found"
+if ($count -gt 0) {
+    $message = 'Confirmation'
+    $question = 'Do you wanna see the new wallpapers?'
+
+    $choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]
+    $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))
+    $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&No'))
+
+    $decision = $Host.UI.PromptForChoice($message, $question, $choices, 1)
+    if ($decision -eq 0) {
+        foreach ($item in $final) {
+            Start-Process $item
+        }
+    }
+}
