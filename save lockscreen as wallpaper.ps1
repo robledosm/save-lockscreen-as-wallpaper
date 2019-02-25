@@ -59,3 +59,6 @@ if ($count -gt 0) {
         }
     }
 }
+else {
+    Read-Host "Press any key to end"
+}
