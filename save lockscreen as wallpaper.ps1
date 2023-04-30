@@ -32,7 +32,7 @@ foreach ($asset in $assets) {
         Copy-Item $asset.FullName $tempImagePath #Copy the file to the temp folder adding .png as extension
         $image = New-Object -comObject WIA.ImageFile
         $image.LoadFile($tempImagePath)
-        if ($image.Width.ToString() -eq "1920") {
+        if ($image.Width.ToString() -eq "1920" -or $image.Width.ToString() -eq "2560") {
             #If the image is 1920 pixels width...
             $finalDestination = "$savePath\$($asset.Name).png"
             Move-Item $tempImagePath $finalDestination -Force #Move it to its final destination
